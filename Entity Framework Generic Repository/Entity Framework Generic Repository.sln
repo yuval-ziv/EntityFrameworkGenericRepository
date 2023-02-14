@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EntityFrameworkGenericRepository", "EntityFrameworkGenericRepository\EntityFrameworkGenericRepository.csproj", "{DE24D652-3ADC-4AEB-8208-E2B7773CFD23}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DE24D652-3ADC-4AEB-8208-E2B7773CFD23}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE24D652-3ADC-4AEB-8208-E2B7773CFD23}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE24D652-3ADC-4AEB-8208-E2B7773CFD23}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE24D652-3ADC-4AEB-8208-E2B7773CFD23}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
