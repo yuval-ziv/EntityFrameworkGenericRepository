@@ -2,10 +2,13 @@
 
 namespace EntityFrameworkGenericRepository.Repositories;
 
-public interface IRepository<TId, TEntity> where TEntity : BaseEntity
+public interface IRepository<TEntity, in TId> where TEntity : BaseEntity<TId> where TId : IEquatable<TId>
 {
-    IEnumerable<BaseEntity> FindAll();
+    TEntity FindById(TId id);
 
-    int Count();
-    
+    IEnumerable<TEntity> FindAll();
+
+    int CountAll();
+
+    TEntity Save(TEntity entity);
 }
