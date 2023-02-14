@@ -1,6 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+    
     <PropertyGroup>
+        <PackageId>EntityFrameworkGenericRepository.YuvalZiv</PackageId>
+        <Version>0.0.1</Version>
+        <Authors>Yuval Ziv</Authors>
+        <Company>Yuval Ziv</Company>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
