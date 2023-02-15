@@ -1,19 +1,31 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
-    
     <PropertyGroup>
         <PackageId>EntityFrameworkGenericRepository.YuvalZiv</PackageId>
-        <Version>0.0.1</Version>
+        <Version>0.0.4</Version>
+        <Authors>Yuval Ziv</Authors>
+        <Copyright>Yuval Ziv</Copyright>
+        <Description>Generic repository implementation for .Net EntityFramework including basic CRUD operations.</Description>
+        <PackageReleaseNotes>Added release notes in build script.</PackageReleaseNotes>
+        <PackageProjectUrl>https://github.com/yuval-ziv/EntityFrameworkGenericRepository</PackageProjectUrl>
+        <RepositoryType>git</RepositoryType>
+        <RepositoryUrl>https://github.com/yuval-ziv/EntityFrameworkGenericRepository</RepositoryUrl>
         <Authors>Yuval Ziv</Authors>
         <Company>Yuval Ziv</Company>
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Copyright>Yuval Ziv</Copyright>
+        <PackageTags>Entity Framwork Core entity-framework-core EF Data O/RM EntityFramework EntityFrameworkCore EFCore Generic Repository GenericRepository</PackageTags>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+
         <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.3" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.3"/>
+        <None Include="../LICENSE" Pack="true" PackagePath=""/>
+        <None Include="../README.md" Pack="true" PackagePath=""/>
     </ItemGroup>
 
 </Project>
