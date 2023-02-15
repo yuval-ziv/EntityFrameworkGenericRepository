@@ -85,6 +85,7 @@ fabric.properties
 *.iml
 out
 gen
+.run
 
 
 bin/
