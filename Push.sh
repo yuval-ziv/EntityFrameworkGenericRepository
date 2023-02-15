@@ -1,31 +1,59 @@
 #!/bin/bash
+
+
+#Arguments check
+
 if [[ -z "$1" ]] || [[ -z "$2" ]] || [[ -z "$3" ]] || [[ -z "$4" ]] || [[ -z "$5" ]]
 then
-  echo "ERROR: You must specify either a get, major, minor, patch or none argument, a project file, a nuget api key, path to bin directory and a build configuration."
-  echo "Usage: $0 (get|major|minor|patch) MyProject.csproj nugetApiKey \\path\\to\\bin"
+  echo "ERROR: You must specify either a get, major, minor, patch or none argument, a project file, a nuget api key, path to bin directory and a build configuration (optional: release notes surround with \"\")."
+  echo "Usage: $0 (get|major|minor|patch|none) MyProject.csproj nugetApiKey \\path\\to\\bin BuildConfiguration (\"Release Notes\")"
   exit 1
 fi
+
+
+#project file (csproj) exists.
+
+if [[ ! -f $2 ]]
+then
+  echo "ERROR: The project file '$2' does not exist."
+  read 
+  exit 2
+fi
+
+
+#project file (csproj) is writeable.
 
 if [[ ! -w $2 ]]
 then
   echo "ERROR: The project file '$2' either does not exist, or is not writable."
-  exit 2
+  exit 3
 fi
 
-if [[ ! -w $4 ]]
+
+#bin directory exists.
+
+if [[ ! -d $4 ]]
 then
-  echo "ERROR: The path to bin/release directory '$4' either does not exist, or is not writable."
-  exit 2
+  echo "ERROR: The path to bin directory '$4' either does not exist, or is not writable."
+  exit 4
 fi
+
+
+#Get old version
 
 Version=$(sed -n 's/.*<Version>\(.*\)<\/Version>.*/\1/p' $2)
-echo Old Version: $Version
+
 if [ -z "$Version" ]
 then
   echo "ERROR: Could not find a <Version/> tag in the project file '$2'."
   echo "Please add one in between the <Project><PropertyGroup> tags and try again."
-  exit 3
+  exit 5
 fi
+
+echo Old Version: $Version
+
+
+#Build
 
 BuildOutput=$(dotnet build --configuration $5)
 BuildStatus=$?
@@ -40,6 +68,8 @@ fi
 echo Build succeeded.
 
 
+#Test
+
 TestOutput=$(dotnet test --configuration Release)
 TestStatus=$?
 
@@ -52,6 +82,9 @@ fi
 
 echo Test succeeded.
 
+
+#Change and set version
+
 VersionParts=(${Version//./ })
 case "$1" in
   get) echo $Version; exit 0 ;;
@@ -61,18 +94,29 @@ case "$1" in
   none) (()) ;;
   *)
     echo "ERROR: Invalid SemVer position name supplied, '$1' was not understood."
-    echo "Usage: $0 (-get|major|minor|patch) $2"
-    exit 4
+    echo "Usage: $0 (-get|major|minor|patch|none) $2 $3 $4 $5"
+    exit 6
 esac
 
 NewVersion="${VersionParts[0]}.${VersionParts[1]}.${VersionParts[2]}"
 sed -i -e "s/<Version>$Version<\/Version>/<Version>$NewVersion<\/Version>/g" $2
 echo New Version: $NewVersion
 
-echo Enter release notes:
-read -r ReleaseNotes
+
+#Add release notes
+
+ReleaseNotes=$6
+
+if [[ -z "$ReleaseNotes" ]] 
+then
+  echo Enter release notes:
+  read -r ReleaseNotes
+fi
 
 sed -i -e "s/<PackageReleaseNotes>\(.*\)<\/PackageReleaseNotes>/<PackageReleaseNotes>$ReleaseNotes<\/PackageReleaseNotes>/g" $2
+
+
+#Pack
 
 PackOutput=$(dotnet pack --configuration Release)
 PackStatus=$?
@@ -85,6 +129,9 @@ if ((PackStatus != 0)); then
 fi
 
 echo Pack succeeded.
+
+
+#Push
 
 PackageId=$(sed -n 's/.*<PackageId>\(.*\)<\/PackageId>.*/\1/p' $2)
 PackageFile=$4/$5/$PackageId.$NewVersion.nupkg
@@ -100,6 +147,9 @@ if ((PushStatus != 0)); then
 fi
 
 echo Push succeeded.
+
+
+#Delete package
 
 rm $PackageFile
 
