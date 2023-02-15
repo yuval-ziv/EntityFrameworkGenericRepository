@@ -1,2 +1,2 @@
 # EntityFrameworkGenericRepository
-A generic repository for .Net EntityFramework including basic CRUD operations
+A generic repository implementation for .Net EntityFramework including basic CRUD operations.
