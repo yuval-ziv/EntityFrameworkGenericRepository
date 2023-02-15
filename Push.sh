@@ -70,7 +70,7 @@ echo Build succeeded.
 
 #Test
 
-TestOutput=$(dotnet test --configuration Release)
+TestOutput=$(dotnet test --configuration $5)
 TestStatus=$?
 
 if ((TestStatus != 0)); then
