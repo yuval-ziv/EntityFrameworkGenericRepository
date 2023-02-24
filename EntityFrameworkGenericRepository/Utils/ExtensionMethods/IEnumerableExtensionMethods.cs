@@ -1,8 +1,8 @@
 ﻿namespace EntityFrameworkGenericRepository.Utils.ExtensionMethods;
 
-public static class ICollectionExtensionMethods
+public static class IEnumerableExtensionMethods
 {
-    public static bool IsNullOrEmpty<T>(this ICollection<T>? collection)
+    public static bool IsNullOrEmpty<T>(this IEnumerable<T>? collection)
     {
         return collection == null || collection.Any();
     }
