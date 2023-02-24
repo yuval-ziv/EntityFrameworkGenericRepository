@@ -1,5 +1,24 @@
 #!/bin/bash
 
+pause() {
+  read -p "Press key to continue . . . " -n1 -s
+}
+
+print_job_fail() {
+  job_name=$1
+  job_output=$2
+  job_status=$3
+  
+  if ((job_status != 0)); then
+    echo "$job_name" failed with status "$BuildStatus".
+    echo Build output:
+    echo "$job_output"
+    pause
+    exit "$job_status"
+  fi
+  
+  echo "$job_name" succeeded.
+}
 
 #Arguments check
 
@@ -7,6 +26,7 @@ if [[ -z "$1" ]] || [[ -z "$2" ]] || [[ -z "$3" ]] || [[ -z "$4" ]] || [[ -z "$5
 then
   echo "ERROR: You must specify either a get, major, minor, patch or none argument, a project file, a nuget api key, path to bin directory and a build configuration (optional: release notes surround with \"\")."
   echo "Usage: $0 (get|major|minor|patch|none) MyProject.csproj nugetApiKey \\path\\to\\bin BuildConfiguration (\"Release Notes\")"
+  pause
   exit 1
 fi
 
@@ -16,7 +36,7 @@ fi
 if [[ ! -f $2 ]]
 then
   echo "ERROR: The project file '$2' does not exist."
-  read 
+  pause
   exit 2
 fi
 
@@ -26,6 +46,7 @@ fi
 if [[ ! -w $2 ]]
 then
   echo "ERROR: The project file '$2' either does not exist, or is not writable."
+  pause
   exit 3
 fi
 
@@ -35,6 +56,7 @@ fi
 if [[ ! -d $4 ]]
 then
   echo "ERROR: The path to bin directory '$4' either does not exist, or is not writable."
+  pause
   exit 4
 fi
 
@@ -47,10 +69,11 @@ if [ -z "$Version" ]
 then
   echo "ERROR: Could not find a <Version/> tag in the project file '$2'."
   echo "Please add one in between the <Project><PropertyGroup> tags and try again."
+  pause
   exit 5
 fi
 
-echo Old Version: $Version
+echo Old Version: "$Version"
 
 
 #Build
@@ -58,14 +81,7 @@ echo Old Version: $Version
 BuildOutput=$(dotnet build --configuration $5)
 BuildStatus=$?
 
-if ((BuildStatus != 0)); then
-  echo Build failed with status $BuildStatus.
-  echo Build Output:
-  echo $BuildOutput
-  exit $BuildStatus
-fi
-
-echo Build succeeded.
+print_job_fail "Build" "$BuildOutput" "$BuildStatus"
 
 
 #Test
@@ -73,14 +89,7 @@ echo Build succeeded.
 TestOutput=$(dotnet test --configuration $5)
 TestStatus=$?
 
-if ((TestStatus != 0)); then
-  echo Test failed with status $TestStatus.
-  echo Test Output:
-  echo $TestOutput
-  exit $TestStatus
-fi
-
-echo Test succeeded.
+print_job_fail "Test" "$TestOutput" "$TestStatus"
 
 
 #Change and set version
@@ -95,6 +104,7 @@ case "$1" in
   *)
     echo "ERROR: Invalid SemVer position name supplied, '$1' was not understood."
     echo "Usage: $0 (-get|major|minor|patch|none) $2 $3 $4 $5"
+    pause
     exit 6
 esac
 
@@ -121,14 +131,7 @@ sed -i -e "s/<PackageReleaseNotes>\(.*\)<\/PackageReleaseNotes>/<PackageReleaseN
 PackOutput=$(dotnet pack --configuration Release)
 PackStatus=$?
 
-if ((PackStatus != 0)); then
-  echo Pack failed with status $PackStatus
-  echo Pack Output:
-  echo $PackOutput
-  exit $PackStatus
-fi
-
-echo Pack succeeded.
+print_job_fail "Pack" "$PackOutput" "$PackStatus"
 
 
 #Push
@@ -139,14 +142,7 @@ PackageFile=$4/$5/$PackageId.$NewVersion.nupkg
 PushOutput=$(dotnet nuget push $PackageFile --api-key $3 --source https://api.nuget.org/v3/index.json)
 PushStatus=$?
 
-if ((PushStatus != 0)); then
-  echo Publish failed with status $PushOutput
-  echo Publish Output:
-  echo $PushOutput
-  exit $PushStatus
-fi
-
-echo Push succeeded.
+print_job_fail "Push" "$PushOutput" "$PushStatus"
 
 
 #Delete package
@@ -154,3 +150,5 @@ echo Push succeeded.
 rm $PackageFile
 
 echo Package file deletion succeeded.
+
+pause
