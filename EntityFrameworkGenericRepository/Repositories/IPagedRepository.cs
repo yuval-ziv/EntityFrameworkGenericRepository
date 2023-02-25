@@ -7,10 +7,7 @@ public interface IPagedRepository<TEntity, TId, in TFilter> where TEntity : Base
 {
     private const bool INCLUDE = true;
 
-    ICollection<TEntity> FindAllPerPage(TFilter filter, int page, int pageSize, string orderByColumn, bool orderByAscending, out int totalAmount,
-        bool includeRelatedEntities = INCLUDE);
-
-    IEnumerable<TEntity> FindAllPerPage(TFilter filter, int page, int pageSize, string orderByColumn, bool orderByAscending,
+    IPagedCollection<TEntity> FindAllPerPage(TFilter filter, int page, int pageSize, string orderByColumn, bool orderByAscending,
         bool includeRelatedEntities = INCLUDE);
 
     IEnumerable<Expression<Func<TEntity, bool>>> GetFilterPredicates(TFilter filter);

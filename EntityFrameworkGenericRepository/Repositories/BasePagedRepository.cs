@@ -21,33 +21,24 @@ public abstract class BasePagedRepository<TEntity, TId, TFilter, TContext> : Bas
     {
     }
 
-    public virtual ICollection<TEntity> FindAllPerPage(TFilter filter, int page, int pageSize, string orderByColumn, bool orderByAscending, out int totalAmount,
+    public virtual IPagedCollection<TEntity> FindAllPerPage(TFilter filter, int page, int pageSize, string orderByColumn, bool orderByAscending,
         bool includeRelatedEntities = INCLUDE)
     {
         using TContext context = ContextFactory.CreateDbContext();
 
-        IQueryable<TEntity> orderedEntities = GetFiltrationQuery(filter, orderByColumn, orderByAscending, context);
+        IQueryable<TEntity> orderedEntities = GetFiltrationQuery(filter, orderByColumn, orderByAscending, context, includeRelatedEntities);
 
-        totalAmount = orderedEntities.Count();
+        int totalAmount = orderedEntities.Count();
 
-        return orderedEntities.Skip(GetStartIndex(page, pageSize)).Take(pageSize).ToList();
-    }
-
-    public virtual IEnumerable<TEntity> FindAllPerPage(TFilter filter, int page, int pageSize, string orderByColumn, bool orderByAscending,
-        bool includeRelatedEntities = INCLUDE)
-    {
-        using TContext context = ContextFactory.CreateDbContext();
-
-        IQueryable<TEntity> orderedEntities = GetFiltrationQuery(filter, orderByColumn, orderByAscending, context);
-
-        return orderedEntities.Skip(GetStartIndex(page, pageSize)).Take(pageSize).ToList();
+        return new PagedCollection<TEntity>(orderedEntities.Skip(GetStartIndex(page, pageSize)).Take(pageSize).ToList(), totalAmount);
     }
 
     public abstract IEnumerable<Expression<Func<TEntity, bool>>> GetFilterPredicates(TFilter filter);
 
     public abstract Expression<Func<TEntity, object>> KeySelector(string orderByColumn);
 
-    private IQueryable<TEntity> GetFiltrationQuery(TFilter filter, string orderByColumn, bool orderByAscending, TContext context)
+    private IQueryable<TEntity> GetFiltrationQuery(TFilter filter, string orderByColumn, bool orderByAscending, TContext context,
+        bool includeRelatedEntities = INCLUDE)
     {
         IQueryable<TEntity> queryable = context.Set<TEntity>();
 
