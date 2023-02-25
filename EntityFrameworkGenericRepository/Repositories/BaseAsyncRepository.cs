@@ -123,7 +123,7 @@ public abstract class BaseAsyncRepository<TEntity, TId, TContext> : IAsyncReposi
 
         await using TContext context = await ContextFactory.CreateDbContextAsync(cancellationToken);
 
-        TEntity savedEntity = (await context.Set<TEntity>().AddAsync(entity, cancellationToken)).Entity;
+        TEntity savedEntity = context.Set<TEntity>().Add(entity).Entity;
         await context.SaveChangesAsync(cancellationToken);
 
         return await FindByIdAsync(savedEntity.Id, cancellationToken: cancellationToken);
@@ -147,10 +147,9 @@ public abstract class BaseAsyncRepository<TEntity, TId, TContext> : IAsyncReposi
 
         await using TContext context = await ContextFactory.CreateDbContextAsync(cancellationToken);
 
-        await context.Set<TEntity>().AddRangeAsync(entitiesCollection, cancellationToken);
+        context.Set<TEntity>().AddRange(entitiesCollection);
         IEnumerable<TEntity> savedEntities = context.Set<TEntity>().Local.AsEnumerable();
         await context.SaveChangesAsync(cancellationToken);
-
 
         return await FindAllByIdAsync(GetIds<TEntity, TId>(savedEntities), cancellationToken: cancellationToken);
     }
