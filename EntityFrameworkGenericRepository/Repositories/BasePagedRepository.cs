@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using EntityFrameworkGenericRepository.Collections;
 using EntityFrameworkGenericRepository.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,12 +7,17 @@ namespace EntityFrameworkGenericRepository.Repositories;
 
 /// <summary>
 /// An abstract implementation of <see cref="IPagedRepository{TEntity,TId,TFilter}"/>.<br/>
-/// Basic repositories extending this abstract class shouldn only override <see cref="GetFilterPredicates"/> and <see cref="KeySelector"/>.<br/>
-///</summary>
-/// <typeparam name="TContext">A <see cref="DbContext"/> containing the correct <see cref="DbSet{TEntity}"/></typeparam>
-/// <typeparam name="TId">ld entity type for the repository. Can be a simple <see cref="int"/>,or a complex class. </typeparam>
-/// <typeparam name="TEntity">Entity saved in the repository.</typeparam> /// <typeparam name="TFilter">Entity filter.</typeparam>
-///<seealso cref="IPagedRepository{TEntity,TId,TFilter}"/>
+/// Basic repositories extending this abstract class should only override <see cref="GetFilterPredicates"/> and <see cref="KeySelector"/>.
+/// Repositories of entities with foreign keys must override all Find methods. (<see cref="FindAllPerPage"/>) in order to include related entities.
+/// </summary>
+/// <remarks>
+/// <para>
+/// This is a basic implementation of See <see cref="IPagedRepository{TEntity,TId,TFilter}"/>.
+/// </para>
+/// </remarks>
+/// <seealso cref="IPagedRepository{TEntity,TId,TFilter}"/>
+/// <seealso cref="BaseRepository{TEntity,TId,TContext}"/>
+/// <inheritdoc cref="BaseRepository{TEntity,TId,TContext}"/>
 public abstract class BasePagedRepository<TEntity, TId, TFilter, TContext> : BaseRepository<TEntity, TId, TContext>, IPagedRepository<TEntity, TId, TFilter>
     where TEntity : BaseEntity<TId> where TId : IEquatable<TId> where TContext : DbContext
 {

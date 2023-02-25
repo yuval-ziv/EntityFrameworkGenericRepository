@@ -4,12 +4,16 @@ using Microsoft.EntityFrameworkCore;
 namespace EntityFrameworkGenericRepository.Repositories;
 
 /// <summary>
-/// Repository interface for novelty.<br/>
-/// Contains basic methods that should be available to use in all implementations.<br/>
+/// Repository interface that contains basic methods that should be available to use in all implementations.<br/>
 /// Basic implementations can be found in <see cref="BaseRepository{TEntity,TId,TContext}"/>
 ///</summary>
+/// <remarks>
+/// <para>
+/// See <see cref="IAsyncRepository{TEntity,TId}"/> for an async repository with the same methods.
+/// </para>
+/// </remarks>
 /// <typeparam name="TEntity">Entity saved in the repository.</typeparam>
-/// <typeparam name="TId">ld entity type for the repository. Can be a simple <see cref="int"/>, or a complex class</typeparam>
+/// <typeparam name="TId">Id entity type for the repository. Can be a simple <see cref="int"/>, or a complex class</typeparam>
 /// <seealso cref="BaseRepository{TEntity,TId,TContext}"/>
 /// <seealso cref="IAsyncRepository{TEntity,TId}"/>
 /// <seealso cref="IPagedRepository{TEntity,TId,TFilter}" />
@@ -25,7 +29,7 @@ public interface IRepository<TEntity, in TId> where TEntity : BaseEntity<TId> wh
     /// </summary>
     /// <param name="id">The id of the entity</param>
     /// <param name="includeRelatedEntities"> include related entities if true, else false</param>
-    /// <exception cref="T:System.InvalidOperationException">More than one entity has id of paramet name="id"></exception>
+    /// <exception cref="T:System.InvalidOperationException">More than one entity has id of <paramref name="id"/></exception>
     /// <returns>The only entity with the given id, or default(TEntity) if no such entity is found.</returns>
     TEntity? FindById(TId id, bool includeRelatedEntities = INCLUDE);
 
@@ -57,24 +61,28 @@ public interface IRepository<TEntity, in TId> where TEntity : BaseEntity<TId> wh
     /// <summary>
     /// Counts all entities of <typeparamref name="TEntity"/> with an id contained in <paramref name="ids"/>
     /// </summary>
+    /// <param name="ids">a list of <typeparam name="TId"/> to count by.</param>
     /// <returns>Amount of entities of <typeparamref name="TEntity"/> with an id contained in <paramref name="ids"/> </returns>
     long CountAllById(IEnumerable<TId> ids);
 
     /// <summary>
     /// Check if entity exists by id.
     /// </summary>
+    /// <param name="id">a <typeparam name="TId"/> to test if exists in the table.</param>
     /// <returns>true if the entity exists, else false.</returns>
     bool ExistsById(TId id);
 
     /// <summary>
     /// Check if there is an entity for each id in ids.
     /// </summary>
+    /// <param name="ids">a list of <typeparam name="TId"/> to test if exists in the table.</param>
     /// <returns>true if all the ids have an entity, else false.</returns>
     bool ExistsAllById(IEnumerable<TId> ids);
 
     /// <summary>
     /// Check if at least one of the ids has an entity.
     /// </summary>
+    /// <param name="ids">a list of <typeparam name="TId"/> to test if exists in the table.</param>
     /// <returns>true if at least one of the ids has an entity, else false.</returns>
     bool ExistsAnyById(IEnumerable<TId> ids);
 
@@ -99,7 +107,6 @@ public interface IRepository<TEntity, in TId> where TEntity : BaseEntity<TId> wh
     /// <seealso cref="Save"/>
     /// <seealso cref="UpdateAll"/>
     ICollection<TEntity> SaveAll(IEnumerable<TEntity> entities);
-
 
     /// <summary>
     /// Updates and commits an entity to the DB.

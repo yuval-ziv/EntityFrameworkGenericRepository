@@ -9,8 +9,13 @@ namespace EntityFrameworkGenericRepository.Repositories;
 /// <summary>
 /// An abstract implementation of <see cref="IRepository{TEntity,TId}"/>.<br/>
 /// Basic repositories extending this abstract class shouldn't need to override or add any method.<br/>
-/// Repositories of entities with foreign keys must override all Find methods. (<see cref="FindById"/>, <see cref = "FindAll"/>, <see cref = "FindAllById"/>).
+/// Repositories of entities with foreign keys must override all Find methods. (<see cref="FindById"/>, <see cref = "FindAll"/>, <see cref = "FindAllById"/>) in order to include related entities.
 /// </summary>
+/// <remarks>
+/// <para>
+/// This is a basic implementation of See <see cref="IRepository{TEntity,TId}"/>.
+/// </para>
+/// </remarks>
 /// <typeparam name="TContext">A <see cref="DbContext"/> containing the correct <see cref="DbSet{TEntity}"/></typeparam>
 /// <typeparam name="TId">id entity type for the repository. Can be a simple <see cref="int"/>, or a complex class.</typeparam>
 /// <typeparam name="TEntity">Entity saved in the repository</typeparam>
