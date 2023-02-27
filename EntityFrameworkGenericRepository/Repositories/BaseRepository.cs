@@ -35,14 +35,20 @@ public abstract class BaseRepository<TEntity, TId, TContext> : IRepository<TEnti
     {
         using TContext context = ContextFactory.CreateDbContext();
 
-        return context.Set<TEntity>().AsNoTracking().SingleOrDefault(entity => entity.Id.Equals(id));
+        IQueryable<TEntity> queryable =
+            includeRelatedEntities ? context.Set<TEntity>().IncludeMembersWithAttribute(typeof(IncludeAttribute)) : context.Set<TEntity>();
+
+        return queryable.SingleOrDefault(entity => entity.Id.Equals(id));
     }
 
     public virtual ICollection<TEntity> FindAll(bool includeRelatedEntities = INCLUDE)
     {
         using TContext context = ContextFactory.CreateDbContext();
 
-        return context.Set<TEntity>().AsNoTracking().ToList();
+        IQueryable<TEntity> queryable =
+            includeRelatedEntities ? context.Set<TEntity>().IncludeMembersWithAttribute(typeof(IncludeAttribute)) : context.Set<TEntity>();
+
+        return queryable.AsNoTracking().ToList();
     }
 
     public virtual ICollection<TEntity> FindAllById(IEnumerable<TId> ids, bool includeRelatedEntities = INCLUDE)
@@ -56,7 +62,10 @@ public abstract class BaseRepository<TEntity, TId, TContext> : IRepository<TEnti
 
         using TContext context = ContextFactory.CreateDbContext();
 
-        return context.Set<TEntity>().AsNoTracking().Where(entity => idsCollection.Contains(entity.Id)).ToList();
+        IQueryable<TEntity> queryable =
+            includeRelatedEntities ? context.Set<TEntity>().IncludeMembersWithAttribute(typeof(IncludeAttribute)) : context.Set<TEntity>();
+
+        return queryable.AsNoTracking().Where(entity => idsCollection.Contains(entity.Id)).ToList();
     }
 
     public virtual long CountAll()

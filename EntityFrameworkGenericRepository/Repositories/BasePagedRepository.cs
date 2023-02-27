@@ -1,6 +1,7 @@
 ﻿using System.Linq.Expressions;
 using EntityFrameworkGenericRepository.Collections;
 using EntityFrameworkGenericRepository.Entities;
+using EntityFrameworkGenericRepository.Utils.ExtensionMethods;
 using Microsoft.EntityFrameworkCore;
 
 namespace EntityFrameworkGenericRepository.Repositories;
@@ -46,7 +47,8 @@ public abstract class BasePagedRepository<TEntity, TId, TFilter, TContext> : Bas
     private IQueryable<TEntity> GetFiltrationQuery(TFilter filter, string orderByColumn, bool orderByAscending, TContext context,
         bool includeRelatedEntities = INCLUDE)
     {
-        IQueryable<TEntity> queryable = context.Set<TEntity>();
+        IQueryable<TEntity> queryable =
+            includeRelatedEntities ? context.Set<TEntity>().IncludeMembersWithAttribute(typeof(IncludeAttribute)) : context.Set<TEntity>();
 
         IQueryable<TEntity> filteredEntities = Filter(queryable, filter);
 

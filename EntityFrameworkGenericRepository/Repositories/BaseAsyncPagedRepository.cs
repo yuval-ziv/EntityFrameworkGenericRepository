@@ -1,6 +1,7 @@
 ﻿using System.Linq.Expressions;
 using EntityFrameworkGenericRepository.Collections;
 using EntityFrameworkGenericRepository.Entities;
+using EntityFrameworkGenericRepository.Utils.ExtensionMethods;
 using Microsoft.EntityFrameworkCore;
 
 namespace EntityFrameworkGenericRepository.Repositories;
@@ -32,7 +33,8 @@ public abstract class BaseAsyncPagedRepository<TEntity, TId, TFilter, TContext> 
     {
         await using TContext context = await ContextFactory.CreateDbContextAsync(cancellationToken);
 
-        IQueryable<TEntity> orderedEntities = await GetFiltrationQueryAsync(filter, orderByColumn, orderByAscending, context, cancellationToken);
+        IQueryable<TEntity> orderedEntities =
+            await GetFiltrationQueryAsync(filter, orderByColumn, orderByAscending, context, includeRelatedEntities, cancellationToken);
 
         int totalAmount = orderedEntities.Count();
 
@@ -45,9 +47,10 @@ public abstract class BaseAsyncPagedRepository<TEntity, TId, TFilter, TContext> 
     public abstract Task<Expression<Func<TEntity, object>>> KeySelectorAsync(string orderByColumn, CancellationToken cancellationToken = default);
 
     private async Task<IQueryable<TEntity>> GetFiltrationQueryAsync(TFilter filter, string orderByColumn, bool orderByAscending, TContext context,
-        CancellationToken cancellationToken = default)
+        bool includeRelatedEntities = INCLUDE, CancellationToken cancellationToken = default)
     {
-        IQueryable<TEntity> queryable = context.Set<TEntity>();
+        IQueryable<TEntity> queryable =
+            includeRelatedEntities ? context.Set<TEntity>().IncludeMembersWithAttribute(typeof(IncludeAttribute)) : context.Set<TEntity>();
 
         IQueryable<TEntity> filteredEntities = await FilterAsync(queryable, filter, cancellationToken);
 

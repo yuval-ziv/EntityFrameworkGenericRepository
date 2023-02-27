@@ -34,15 +34,21 @@ public abstract class BaseAsyncRepository<TEntity, TId, TContext> : IAsyncReposi
     public virtual async Task<TEntity?> FindByIdAsync(TId id, bool includeRelatedEntities = INCLUDE, CancellationToken cancellationToken = default)
     {
         await using TContext context = await ContextFactory.CreateDbContextAsync(cancellationToken);
+        
+        IQueryable<TEntity> queryable =
+            includeRelatedEntities ? context.Set<TEntity>().IncludeMembersWithAttribute(typeof(IncludeAttribute)) : context.Set<TEntity>();
 
-        return context.Set<TEntity>().AsNoTracking().SingleOrDefault(entity => entity.Id.Equals(id));
+        return queryable.AsNoTracking().SingleOrDefault(entity => entity.Id.Equals(id));
     }
 
     public virtual async Task<ICollection<TEntity>> FindAllAsync(bool includeRelatedEntities = INCLUDE, CancellationToken cancellationToken = default)
     {
         await using TContext context = await ContextFactory.CreateDbContextAsync(cancellationToken);
 
-        return await context.Set<TEntity>().AsNoTracking().ToListAsync(cancellationToken: cancellationToken);
+        IQueryable<TEntity> queryable =
+            includeRelatedEntities ? context.Set<TEntity>().IncludeMembersWithAttribute(typeof(IncludeAttribute)) : context.Set<TEntity>();
+
+        return await queryable.AsNoTracking().ToListAsync(cancellationToken: cancellationToken);
     }
 
     public virtual async Task<ICollection<TEntity>> FindAllByIdAsync(IEnumerable<TId> ids, bool includeRelatedEntities = INCLUDE,
@@ -57,7 +63,10 @@ public abstract class BaseAsyncRepository<TEntity, TId, TContext> : IAsyncReposi
 
         await using TContext context = await ContextFactory.CreateDbContextAsync(cancellationToken);
 
-        return await context.Set<TEntity>().AsNoTracking().Where(entity => idsCollection.Contains(entity.Id)).ToListAsync(cancellationToken: cancellationToken);
+        IQueryable<TEntity> queryable =
+            includeRelatedEntities ? context.Set<TEntity>().IncludeMembersWithAttribute(typeof(IncludeAttribute)) : context.Set<TEntity>();
+
+        return await queryable.AsNoTracking().Where(entity => idsCollection.Contains(entity.Id)).ToListAsync(cancellationToken: cancellationToken);
     }
 
     public virtual async Task<long> CountAllAsync(CancellationToken cancellationToken = default)
