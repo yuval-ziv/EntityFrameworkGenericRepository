@@ -1,11 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <PackageId>EntityFrameworkGenericRepository.YuvalZiv</PackageId>
-        <Version>0.0.4</Version>
+        <Version>0.0.7</Version>
         <Authors>Yuval Ziv</Authors>
         <Copyright>Yuval Ziv</Copyright>
         <Description>Generic repository implementation for .Net EntityFramework including basic CRUD operations.</Description>
-        <PackageReleaseNotes>Added release notes in build script.</PackageReleaseNotes>
+        <PackageReleaseNotes>Added auto include properties and fields with IncludeAttribute.cs attached to them.</PackageReleaseNotes>
         <PackageProjectUrl>https://github.com/yuval-ziv/EntityFrameworkGenericRepository</PackageProjectUrl>
         <RepositoryType>git</RepositoryType>
         <RepositoryUrl>https://github.com/yuval-ziv/EntityFrameworkGenericRepository</RepositoryUrl>
