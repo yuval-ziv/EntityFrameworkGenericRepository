@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using EntityFrameworkGenericRepository.Attributes;
 using EntityFrameworkGenericRepository.Collections;
 using EntityFrameworkGenericRepository.Entities;
 using EntityFrameworkGenericRepository.Utils.ExtensionMethods;

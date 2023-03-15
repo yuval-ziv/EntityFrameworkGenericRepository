@@ -1,4 +1,5 @@
-﻿using EntityFrameworkGenericRepository.Entities;
+﻿using EntityFrameworkGenericRepository.Attributes;
+using EntityFrameworkGenericRepository.Entities;
 using EntityFrameworkGenericRepository.Exceptions;
 using EntityFrameworkGenericRepository.Utils.ExtensionMethods;
 using Microsoft.EntityFrameworkCore;
