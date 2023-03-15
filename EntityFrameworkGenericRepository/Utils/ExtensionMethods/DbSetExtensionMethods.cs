@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EntityFrameworkGenericRepository.Utils.ExtensionMethods;
 
-public static class IQueryableExtensionMethods
+public static class DbSetExtensionMethods
 {
     public static IQueryable<T> IncludeMembersWithAttribute<T>(this DbSet<T> queryable, Type attributeType) where T : class
     {
