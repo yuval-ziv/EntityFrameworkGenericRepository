@@ -45,7 +45,15 @@ public abstract class BaseAsyncPagedRepository<TEntity, TId, TFilter, TContext> 
 
     public abstract Task<IEnumerable<Expression<Func<TEntity, bool>>>> GetFilterPredicatesAsync(TFilter filter, CancellationToken cancellationToken = default);
 
-    public abstract Task<Expression<Func<TEntity, object>>> KeySelectorAsync(string orderByColumn, CancellationToken cancellationToken = default);
+
+    public virtual Task<Expression<Func<TEntity, string>>> KeySelectorAsync(string orderByColumn, CancellationToken cancellationToken = default)
+    {
+        ParameterExpression parameterExpression = Expression.Parameter(typeof(TEntity));
+
+        MemberExpression orderByColumnProperty = Expression.PropertyOrField(parameterExpression, orderByColumn);
+
+        return Task.FromResult((Expression<Func<TEntity, string>>)Expression.Lambda(orderByColumnProperty, parameterExpression));
+    }
 
     private async Task<IQueryable<TEntity>> GetFiltrationQueryAsync(TFilter filter, string orderByColumn, bool orderByAscending, TContext context,
         bool includeRelatedEntities = INCLUDE, CancellationToken cancellationToken = default)
@@ -55,13 +63,11 @@ public abstract class BaseAsyncPagedRepository<TEntity, TId, TFilter, TContext> 
 
         IQueryable<TEntity> filteredEntities = await FilterAsync(queryable, filter, cancellationToken);
 
-        Func<Expression<Func<TEntity, object>>, IOrderedQueryable<TEntity>> orderMethod = orderByAscending
+        Func<Expression<Func<TEntity, string>>, IOrderedQueryable<TEntity>> orderMethod = orderByAscending
             ? filteredEntities.OrderBy
             : filteredEntities.OrderByDescending;
 
-        IQueryable<TEntity> orderedEntities = orderMethod(await KeySelectorAsync(orderByColumn, cancellationToken));
-
-        return orderedEntities;
+        return orderMethod(await KeySelectorAsync(orderByColumn, cancellationToken));
     }
 
 

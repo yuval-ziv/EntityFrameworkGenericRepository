@@ -41,9 +41,16 @@ public abstract class BasePagedRepository<TEntity, TId, TFilter, TContext> : Bas
         return new PagedCollection<TEntity>(orderedEntities.Skip(GetStartIndex(page, pageSize)).Take(pageSize).ToList(), totalAmount);
     }
 
-    public abstract IEnumerable<Expression<Func<TEntity, bool>>> GetFilterPredicates(TFilter filter);
+    public virtual Expression<Func<TEntity, string>> KeySelector(string orderByColumn)
+    {
+        ParameterExpression parameterExpression = Expression.Parameter(typeof(TEntity));
 
-    public abstract Expression<Func<TEntity, object>> KeySelector(string orderByColumn);
+        MemberExpression orderByColumnProperty = Expression.PropertyOrField(parameterExpression, orderByColumn);
+
+        return (Expression<Func<TEntity, string>>)Expression.Lambda(orderByColumnProperty, parameterExpression);
+    }
+
+    public abstract IEnumerable<Expression<Func<TEntity, bool>>> GetFilterPredicates(TFilter filter);
 
     private IQueryable<TEntity> GetFiltrationQuery(TFilter filter, string orderByColumn, bool orderByAscending, TContext context,
         bool includeRelatedEntities = INCLUDE)
@@ -53,13 +60,11 @@ public abstract class BasePagedRepository<TEntity, TId, TFilter, TContext> : Bas
 
         IQueryable<TEntity> filteredEntities = Filter(queryable, filter);
 
-        Func<Expression<Func<TEntity, object>>, IOrderedQueryable<TEntity>> orderMethod = orderByAscending
+        Func<Expression<Func<TEntity, string>>, IOrderedQueryable<TEntity>> orderMethod = orderByAscending
             ? filteredEntities.OrderBy
             : filteredEntities.OrderByDescending;
 
-        IQueryable<TEntity> orderedEntities = orderMethod(KeySelector(orderByColumn));
-
-        return orderedEntities;
+        return orderMethod(KeySelector(orderByColumn));
     }
 
 

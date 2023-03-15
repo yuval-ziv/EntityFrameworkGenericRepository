@@ -46,5 +46,5 @@ public interface IPagedRepository<TEntity, TId, in TFilter> where TEntity : Base
     /// </summary>
     /// <param name="orderByColumn"></param>
     /// <returns></returns>
-    Expression<Func<TEntity, object>> KeySelector(string orderByColumn);
+    Expression<Func<TEntity, string>> KeySelector(string orderByColumn);
 }

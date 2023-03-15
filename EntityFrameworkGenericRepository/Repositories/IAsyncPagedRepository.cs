@@ -52,5 +52,5 @@ public interface IAsyncPagedRepository<TEntity, TId, in TFilter> where TEntity :
     /// <param name="cancellationToken">a <see cref="CancellationToken"/> to observe while waiting for the task to complete.</param>
     /// <exception cref="OperationCanceledException">if the <see cref="cancellationToken"/> is canceled.</exception>
     /// <returns></returns>
-    Task<Expression<Func<TEntity, object>>> KeySelectorAsync(string orderByColumn, CancellationToken cancellationToken = default);
+    Task<Expression<Func<TEntity, string>>> KeySelectorAsync(string orderByColumn, CancellationToken cancellationToken = default);
 }
