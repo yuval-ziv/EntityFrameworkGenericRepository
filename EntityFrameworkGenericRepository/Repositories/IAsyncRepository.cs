@@ -25,7 +25,7 @@ public interface IAsyncRepository<TEntity, in TId> where TEntity : BaseEntity<TI
     /// Returns the only entity with the given id or default value if no such entity exists.<br/>
     /// Throws an exception if more than one entity has the same id.<br/>
     /// Related entities are foreign keys that need to be included with <see cref="EntityFrameworkQueryableExtensions.Include{TEntity, TProperty}"/>
-    /// The method should be implemented with <see cref="Queryable.SingleOrDefault{TSource}(System.Linq.IQueryable{TSource})"/><br/>
+    /// The method should be implemented with <see cref="EntityFrameworkQueryableExtensions.FirstOrDefaultAsync{TSource}(System.Linq.IQueryable{TSource},System.Threading.CancellationToken)"/><br/>
     /// </summary>
     /// <param name="id">The id of the entity</param>
     /// <param name="includeRelatedEntities"> include related entities if true, else false</param>

@@ -39,7 +39,7 @@ public abstract class BaseRepository<TEntity, TId, TContext> : IRepository<TEnti
         IQueryable<TEntity> queryable =
             includeRelatedEntities ? context.Set<TEntity>().IncludeMembersWithAttribute(typeof(IncludeAttribute)) : context.Set<TEntity>();
 
-        return queryable.SingleOrDefault(entity => entity.Id.Equals(id));
+        return queryable.FirstOrDefault(entity => entity.Id.Equals(id));
     }
 
     public virtual ICollection<TEntity> FindAll(bool includeRelatedEntities = INCLUDE)

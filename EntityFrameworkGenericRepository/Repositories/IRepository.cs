@@ -25,7 +25,7 @@ public interface IRepository<TEntity, in TId> where TEntity : BaseEntity<TId> wh
     /// Returns the only entity with the given id or default value if no such entity exists.<br/>
     /// Throws an exception if more than one entity has the same id.<br/>
     /// Related entities are foreign keys that need to be included with <see cref="EntityFrameworkQueryableExtensions.Include{TEntity, TProperty}"/>
-    /// The method should be implemented with <see cref="Queryable.SingleOrDefault{TSource}(System.Linq.IQueryable{TSource})"/><br/>
+    /// The method should be implemented with <see cref="Queryable.FirstOrDefault{TSource}(System.Linq.IQueryable{TSource})"/><br/>
     /// </summary>
     /// <param name="id">The id of the entity</param>
     /// <param name="includeRelatedEntities"> include related entities if true, else false</param>

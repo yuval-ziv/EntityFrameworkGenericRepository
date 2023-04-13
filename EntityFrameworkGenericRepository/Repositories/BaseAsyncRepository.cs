@@ -32,27 +32,35 @@ public abstract class BaseAsyncRepository<TEntity, TId, TContext> : IAsyncReposi
         ContextFactory = contextFactory;
     }
 
-    public virtual async Task<TEntity?> FindByIdAsync(TId id, bool includeRelatedEntities = INCLUDE, CancellationToken cancellationToken = default)
+    public async virtual Task<TEntity?> FindByIdAsync(TId id, bool includeRelatedEntities = INCLUDE,
+        CancellationToken cancellationToken = default)
     {
         await using TContext context = await ContextFactory.CreateDbContextAsync(cancellationToken);
-        
-        IQueryable<TEntity> queryable =
-            includeRelatedEntities ? context.Set<TEntity>().IncludeMembersWithAttribute(typeof(IncludeAttribute)) : context.Set<TEntity>();
 
-        return queryable.AsNoTracking().SingleOrDefault(entity => entity.Id.Equals(id));
+        IQueryable<TEntity> queryable =
+            includeRelatedEntities
+                ? context.Set<TEntity>().IncludeMembersWithAttribute(typeof(IncludeAttribute))
+                : context.Set<TEntity>();
+
+        return await queryable.AsNoTracking()
+            .FirstOrDefaultAsync(entity => entity.Id.Equals(id), cancellationToken: cancellationToken);
     }
 
-    public virtual async Task<ICollection<TEntity>> FindAllAsync(bool includeRelatedEntities = INCLUDE, CancellationToken cancellationToken = default)
+    public async virtual Task<ICollection<TEntity>> FindAllAsync(bool includeRelatedEntities = INCLUDE,
+        CancellationToken cancellationToken = default)
     {
         await using TContext context = await ContextFactory.CreateDbContextAsync(cancellationToken);
 
         IQueryable<TEntity> queryable =
-            includeRelatedEntities ? context.Set<TEntity>().IncludeMembersWithAttribute(typeof(IncludeAttribute)) : context.Set<TEntity>();
+            includeRelatedEntities
+                ? context.Set<TEntity>().IncludeMembersWithAttribute(typeof(IncludeAttribute))
+                : context.Set<TEntity>();
 
         return await queryable.AsNoTracking().ToListAsync(cancellationToken: cancellationToken);
     }
 
-    public virtual async Task<ICollection<TEntity>> FindAllByIdAsync(IEnumerable<TId> ids, bool includeRelatedEntities = INCLUDE,
+    public async virtual Task<ICollection<TEntity>> FindAllByIdAsync(IEnumerable<TId> ids,
+        bool includeRelatedEntities = INCLUDE,
         CancellationToken cancellationToken = default)
     {
         ICollection<TId> idsCollection = ids.ToList();
@@ -65,19 +73,23 @@ public abstract class BaseAsyncRepository<TEntity, TId, TContext> : IAsyncReposi
         await using TContext context = await ContextFactory.CreateDbContextAsync(cancellationToken);
 
         IQueryable<TEntity> queryable =
-            includeRelatedEntities ? context.Set<TEntity>().IncludeMembersWithAttribute(typeof(IncludeAttribute)) : context.Set<TEntity>();
+            includeRelatedEntities
+                ? context.Set<TEntity>().IncludeMembersWithAttribute(typeof(IncludeAttribute))
+                : context.Set<TEntity>();
 
-        return await queryable.AsNoTracking().Where(entity => idsCollection.Contains(entity.Id)).ToListAsync(cancellationToken: cancellationToken);
+        return await queryable.AsNoTracking().Where(entity => idsCollection.Contains(entity.Id))
+            .ToListAsync(cancellationToken: cancellationToken);
     }
 
-    public virtual async Task<long> CountAllAsync(CancellationToken cancellationToken = default)
+    public async virtual Task<long> CountAllAsync(CancellationToken cancellationToken = default)
     {
         await using TContext context = await ContextFactory.CreateDbContextAsync(cancellationToken);
 
         return await context.Set<TEntity>().AsNoTracking().CountAsync(cancellationToken: cancellationToken);
     }
 
-    public virtual async Task<long> CountAllByIdAsync(IEnumerable<TId> ids, CancellationToken cancellationToken = default)
+    public async virtual Task<long> CountAllByIdAsync(IEnumerable<TId> ids,
+        CancellationToken cancellationToken = default)
     {
         ICollection<TId> idsCollection = ids.ToList();
 
@@ -88,17 +100,20 @@ public abstract class BaseAsyncRepository<TEntity, TId, TContext> : IAsyncReposi
 
         await using TContext context = await ContextFactory.CreateDbContextAsync(cancellationToken);
 
-        return await context.Set<TEntity>().AsNoTracking().CountAsync(entity => idsCollection.Contains(entity.Id), cancellationToken: cancellationToken);
+        return await context.Set<TEntity>().AsNoTracking().CountAsync(entity => idsCollection.Contains(entity.Id),
+            cancellationToken: cancellationToken);
     }
 
-    public virtual async Task<bool> ExistsByIdAsync(TId id, CancellationToken cancellationToken = default)
+    public async virtual Task<bool> ExistsByIdAsync(TId id, CancellationToken cancellationToken = default)
     {
         await using TContext context = await ContextFactory.CreateDbContextAsync(cancellationToken);
 
-        return await context.Set<TEntity>().AsNoTracking().AnyAsync(entity => entity.Id.Equals(id), cancellationToken: cancellationToken);
+        return await context.Set<TEntity>().AsNoTracking()
+            .AnyAsync(entity => entity.Id.Equals(id), cancellationToken: cancellationToken);
     }
 
-    public virtual async Task<bool> ExistsAllByIdAsync(IEnumerable<TId> ids, CancellationToken cancellationToken = default)
+    public async virtual Task<bool> ExistsAllByIdAsync(IEnumerable<TId> ids,
+        CancellationToken cancellationToken = default)
     {
         ICollection<TId> idsCollection = ids.ToList();
 
@@ -109,11 +124,13 @@ public abstract class BaseAsyncRepository<TEntity, TId, TContext> : IAsyncReposi
 
         await using TContext context = await ContextFactory.CreateDbContextAsync(cancellationToken);
 
-        return await context.Set<TEntity>().AsNoTracking().CountAsync(entity => idsCollection.Contains(entity.Id), cancellationToken: cancellationToken) ==
+        return await context.Set<TEntity>().AsNoTracking().CountAsync(entity => idsCollection.Contains(entity.Id),
+                   cancellationToken: cancellationToken) ==
                idsCollection.Count;
     }
 
-    public virtual async Task<bool> ExistsAnyByIdAsync(IEnumerable<TId> ids, CancellationToken cancellationToken = default)
+    public async virtual Task<bool> ExistsAnyByIdAsync(IEnumerable<TId> ids,
+        CancellationToken cancellationToken = default)
     {
         ICollection<TId> idsCollection = ids.ToList();
 
@@ -124,10 +141,11 @@ public abstract class BaseAsyncRepository<TEntity, TId, TContext> : IAsyncReposi
 
         await using TContext context = await ContextFactory.CreateDbContextAsync(cancellationToken);
 
-        return await context.Set<TEntity>().AsNoTracking().AnyAsync(entity => idsCollection.Contains(entity.Id), cancellationToken: cancellationToken);
+        return await context.Set<TEntity>().AsNoTracking().AnyAsync(entity => idsCollection.Contains(entity.Id),
+            cancellationToken: cancellationToken);
     }
 
-    public virtual async Task<TEntity?> SaveAsync(TEntity entity, CancellationToken cancellationToken = default)
+    public async virtual Task<TEntity?> SaveAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
         TId id = entity.Id;
 
@@ -144,7 +162,8 @@ public abstract class BaseAsyncRepository<TEntity, TId, TContext> : IAsyncReposi
         return await FindByIdAsync(savedEntity.Id, cancellationToken: cancellationToken);
     }
 
-    public virtual async Task<ICollection<TEntity>> SaveAllAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+    public async virtual Task<ICollection<TEntity>> SaveAllAsync(IEnumerable<TEntity> entities,
+        CancellationToken cancellationToken = default)
     {
         ICollection<TEntity> entitiesCollection = entities.ToList();
 
@@ -157,7 +176,8 @@ public abstract class BaseAsyncRepository<TEntity, TId, TContext> : IAsyncReposi
 
         if (await ExistsAnyByIdAsync(ids, cancellationToken))
         {
-            throw new EntityWithSameIdExistsException($"At least one of the following entity ids already exists {ids}.");
+            throw new EntityWithSameIdExistsException(
+                $"At least one of the following entity ids already exists {ids}.");
         }
 
         await using TContext context = await ContextFactory.CreateDbContextAsync(cancellationToken);
@@ -169,13 +189,14 @@ public abstract class BaseAsyncRepository<TEntity, TId, TContext> : IAsyncReposi
         return await FindAllByIdAsync(GetIds<TEntity, TId>(savedEntities), cancellationToken: cancellationToken);
     }
 
-    public virtual async Task<TEntity?> UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
+    public async virtual Task<TEntity?> UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
         TId id = entity.Id;
 
         if (!await ExistsByIdAsync(id, cancellationToken))
         {
-            throw new EntityIdDoesNotExistsException($"Could not update entity with id {id} because the id is missing.");
+            throw new EntityIdDoesNotExistsException(
+                $"Could not update entity with id {id} because the id is missing.");
         }
 
         await using TContext context = await ContextFactory.CreateDbContextAsync(cancellationToken);
@@ -186,7 +207,8 @@ public abstract class BaseAsyncRepository<TEntity, TId, TContext> : IAsyncReposi
         return await FindByIdAsync(savedEntity.Id, cancellationToken: cancellationToken);
     }
 
-    public virtual async Task<ICollection<TEntity>> UpdateAllAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+    public async virtual Task<ICollection<TEntity>> UpdateAllAsync(IEnumerable<TEntity> entities,
+        CancellationToken cancellationToken = default)
     {
         ICollection<TEntity> entitiesCollection = entities.ToList();
 
@@ -199,7 +221,8 @@ public abstract class BaseAsyncRepository<TEntity, TId, TContext> : IAsyncReposi
 
         if (await ExistsAllByIdAsync(ids, cancellationToken))
         {
-            throw new EntityIdDoesNotExistsException($"At least one of the following entity ids does not exists {ids}.");
+            throw new EntityIdDoesNotExistsException(
+                $"At least one of the following entity ids does not exists {ids}.");
         }
 
         await using TContext context = await ContextFactory.CreateDbContextAsync(cancellationToken);
@@ -211,7 +234,7 @@ public abstract class BaseAsyncRepository<TEntity, TId, TContext> : IAsyncReposi
         return await FindAllByIdAsync(GetIds<TEntity, TId>(savedEntities), cancellationToken: cancellationToken);
     }
 
-    public virtual async Task DeleteAsync(TEntity entity, CancellationToken cancellationToken = default)
+    public async virtual Task DeleteAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
         await using TContext context = await ContextFactory.CreateDbContextAsync(cancellationToken);
 
@@ -219,7 +242,8 @@ public abstract class BaseAsyncRepository<TEntity, TId, TContext> : IAsyncReposi
         await context.SaveChangesAsync(cancellationToken);
     }
 
-    public virtual async Task DeleteAllAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+    public async virtual Task DeleteAllAsync(IEnumerable<TEntity> entities,
+        CancellationToken cancellationToken = default)
     {
         await using TContext context = await ContextFactory.CreateDbContextAsync(cancellationToken);
 
@@ -227,7 +251,7 @@ public abstract class BaseAsyncRepository<TEntity, TId, TContext> : IAsyncReposi
         await context.SaveChangesAsync(cancellationToken);
     }
 
-    public virtual async Task DeleteByIdAsync(TId id, CancellationToken cancellationToken = default)
+    public async virtual Task DeleteByIdAsync(TId id, CancellationToken cancellationToken = default)
     {
         TEntity? entity = await FindByIdAsync(id, false, cancellationToken);
 
@@ -239,14 +263,14 @@ public abstract class BaseAsyncRepository<TEntity, TId, TContext> : IAsyncReposi
         await DeleteAsync(entity, cancellationToken);
     }
 
-    public virtual async Task DeleteAllByIdAsync(IEnumerable<TId> ids, CancellationToken cancellationToken = default)
+    public async virtual Task DeleteAllByIdAsync(IEnumerable<TId> ids, CancellationToken cancellationToken = default)
     {
         IEnumerable<TEntity> entities = await FindAllByIdAsync(ids, false, cancellationToken);
 
         await DeleteAllAsync(entities, cancellationToken);
     }
 
-    public virtual async Task DeleteAllAsync(CancellationToken cancellationToken = default)
+    public async virtual Task DeleteAllAsync(CancellationToken cancellationToken = default)
     {
         await using TContext context = await ContextFactory.CreateDbContextAsync(cancellationToken);
 
