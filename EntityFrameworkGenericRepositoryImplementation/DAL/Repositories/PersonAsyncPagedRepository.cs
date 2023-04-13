@@ -23,7 +23,7 @@ public class PersonAsyncPagedRepository : BaseAsyncPagedRepository<Person, int, 
             FilterByParentId(filter),
             FilterByParentName(filter),
             FilterByChildrenAmount(filter),
-            FilterByChildName(filter),
+            FilterByChildName(filter)
         }.WhereNotNull());
     }
 

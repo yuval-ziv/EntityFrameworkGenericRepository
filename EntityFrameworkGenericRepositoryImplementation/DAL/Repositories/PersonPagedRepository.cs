@@ -7,7 +7,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EntityFrameworkGenericRepositoryImplementation.DAL.Repositories;
 
-public class PersonPagedRepository : BasePagedRepository<Person, int, PersonFilter, TestsContext>, IPersonPagedRepository
+public class PersonPagedRepository : BasePagedRepository<Person, int, PersonFilter, TestsContext>,
+    IPersonPagedRepository
 {
     public PersonPagedRepository(IDbContextFactory<TestsContext> contextFactory) : base(contextFactory)
     {
@@ -22,7 +23,7 @@ public class PersonPagedRepository : BasePagedRepository<Person, int, PersonFilt
             FilterByParentId(filter),
             FilterByParentName(filter),
             FilterByChildrenAmount(filter),
-            FilterByChildName(filter),
+            FilterByChildName(filter)
         }.WhereNotNull();
     }
 
