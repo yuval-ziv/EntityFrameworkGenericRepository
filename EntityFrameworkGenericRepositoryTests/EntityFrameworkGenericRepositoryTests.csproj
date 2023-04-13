@@ -33,4 +33,10 @@
       <ProjectReference Include="..\EntityFrameworkGenericRepository\EntityFrameworkGenericRepository.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Tests\IAsyncPagedRepositoryTests" />
+      <Folder Include="Tests\IAsyncRepositoryTests" />
+      <Folder Include="Tests\IPagedRepositoryTests" />
+    </ItemGroup>
+
 </Project>
